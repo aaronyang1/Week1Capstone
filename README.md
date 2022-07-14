@@ -1,3 +1,6 @@
-database.py
+defaults.py (hyperparameters) 
 
-(insert cool planning)
+database.py
+  - 
+  - 
+  - 
