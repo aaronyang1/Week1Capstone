@@ -12,28 +12,18 @@ from typing import Tuple, Callable, List
 
 
 #spectrogram function
-data, sampling_rate = librosa.load(" ", sr=44100, mono=True)
-def plot_recording(time: float) -> Tuple[plt.Figure, plt.Axes]:
-    frames, sample_rate = record_audio(time)
-    data = np.hstack([np.frombuffer(i, np.int16) for i in frames])
+spectrogram, freqs, times = mlab.specgram(
+    samples,
+    NFFT=4096,
+    Fs=sampling_rate,
+    window=mlab.window_hanning,
+    noverlap=int(4096 / 2)
+)
+spectrogram = map(lambda x: x if x != 0 else 10**(-12), spectrogram)
+np.log10(spectrogram)
 
-    # using matplotlib's built-in spectrogram function
-    fig, ax = plt.subplots()
 
-    S, freqs, times, im = ax.specgram(
-        data,
-        NFFT=4096,
-        Fs=sampling_rate,
-        window=mlab.window_hanning,
-        noverlap=4096 // 2,
-        mode='magnitude'
-    )
-    ax.set_ylim(0, 10000)
-    ax.set_xlabel("time (sec)")
-    ax.set_ylabel("frequency (Hz)")
-    return fig, ax
-
-#peaks function
+#peaks function 
 
 @njit
 def _peaks(
@@ -57,6 +47,7 @@ def _peaks(
             
             peaks.append((r, c))
     return peaks
+
 def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min: float):
     
     
@@ -70,6 +61,7 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
     nbrhd_col_offsets = nbrhd_col_indices - neighborhood.shape[1] // 2
 
     return _peaks(data_2d, nbrhd_row_offsets, nbrhd_col_offsets, amp_min=amp_min)
+
 def local_peaks_mask(data: np.ndarray, cutoff: float) -> np.ndarray:
    
     neighborhood_array = generate_binary_structure(2, 2)  
@@ -86,11 +78,18 @@ def local_peaks_mask(data: np.ndarray, cutoff: float) -> np.ndarray:
     mask[peak_locations[:, 0], peak_locations[:, 1]] = 1
   
     return mask
+
 #neighborhood
 
+base_structure = generate_binary_structure(2,1)
+neighborhood = iterate_structure(base_structure, 20s)
 
 #fingerprints
-def fingerprints(peaklocations):
+def fingerprints(data):
     fanout = 15
-    for i in range()
+    s = peak_locations.shape
 
+    
+    
+
+            

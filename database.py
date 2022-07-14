@@ -8,7 +8,7 @@ import pickle
 fingerprints = defaultdict(None)
 songID = defaultdict(None)
 
-def addFingerprint(key: tuple, value: list):  #fp (1,2,3) : [(1,2), (1,3)] --song
+def addFingerprint(key: tuple, value: tuple):  #fp (1,2,3) : [(1,2), (1,3)] --song
     """
     Adds fingerprint key/value pair to the fingerprints dictionary
 
@@ -17,24 +17,31 @@ def addFingerprint(key: tuple, value: list):  #fp (1,2,3) : [(1,2), (1,3)] --son
     key: tuple, shape = (3,)
         fingerprint in the form (f_i, f_j, ∆t_ij)
     
-    value: list, shape = (N,)
+    value: tuple, shape = (2,)
+        Tuple containing songID and time pair.
     """
     if key not in fingerprints:
         fingerprints[key] = [value]
     else:
         fingerprints[key].append(value)
 
-def removeFingerprint(key: tuple):
-
+def removeFingerprint(key: tuple, value: list):
     """
     Removes input fingerprint from dictionary 
+    
+    Parameters
+    ----------
+    key: tuple, shape = ()
     """
 
     if key not in fingerprints:
         return "No such finger print exists :("
     else:
-        del fingerprints[key]
-        print("Fingerprint deleted :)")
+        values = fingerprints[key]
+        values.remove(value)
+        fingerprints[key] = values
+        
+        print("Fingerprint value deleted :)")
 
 def addSongID(id: int, songInfo: tuple): 
     """
@@ -48,11 +55,10 @@ def addSongID(id: int, songInfo: tuple):
     songInfo: tuple, shape = (2,)
         Tuple containing the song name and artist
     """
-    if id not in songID:
-        songID[id] = [songInfo]
+    songID[id] = [songInfo]
     
 
-def removeSongID(id: tuple):
+def removeSongID(id: int):
 
     """
     Removes input id from songID dictionary 
@@ -69,12 +75,12 @@ def removeSongID(id: tuple):
         del songID[id]
         print("Song deleted :)")        
 
-def saveFingerprints():
+def saveFingerprints(not_fingerprints):
     """
     Saves the fingerprints dictionary as fingerprints.pkl
     """
     with open("fingerprints.pkl", mode="wb") as opened_file:
-        pickle.dump(fingerprints, opened_file)
+        pickle.dump(not_fingerprints, opened_file)
 
 def loadFingerprints():
     """
@@ -82,7 +88,8 @@ def loadFingerprints():
     dictionary equal to it
     """
     with open("fingerprints.pkl", mode="rb") as opened_file:
-        fingerprints = pickle.load(fingerprints, opened_file)
+        fingerprints1 = pickle.load(opened_file)
+    fingerprints = fingerprints1
 
 def saveSongIDs():
     """
@@ -97,7 +104,7 @@ def loadSongIDs():
     dictionary equal to it
     """
     with open("songID.pkl", mode="rb") as opened_file:
-        songID = pickle.load(songID, opened_file)
+        songID = pickle.load(opened_file)
 
 def getFingerprint(key: tuple):
     """
@@ -120,4 +127,22 @@ def getSong (key: int):
     Gets name of song from songID dictionary given its songID.
     """
     return songID[key]
-    
+
+"""
+addFingerprint((1, 2, 3), (4, 5, 6))
+addFingerprint((1, 2, 3), (7, 8, 9))
+addFingerprint((3, 2, 1), (10, 11, 12))
+saveFingerprints(fingerprints)
+"""
+
+temp = loadFingerprints()
+print(temp)
+
+"""
+addSongID(1, ("Halo Theme", "Ryan Soklaski"))
+addSongID(2, ('Waluigiverse', 'Ryan Soklaski'))
+addSongID(3, ('Never Gonna Give You Up', 'Ryan Soklaski'))
+addSongID(4, ("Song of Storms", 'Ryan Soklaski'))
+addSongID(2, ("Cotton Eye Joe", 'Ryan Soklaski'))
+print(getSong(4))
+"""
