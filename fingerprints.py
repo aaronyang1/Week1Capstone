@@ -41,6 +41,9 @@ def _peaks(
     for c, r in np.ndindex(*data_2d.shape[::-1]):
         if data_2d[r, c] <= amp_min:
             continue
+    
+    for dr, dc in zip(nbrhd_row_offsets, nbrhd_col_offsets):
+            if dr == 0 and dc == 0:
 
 
 #neighborhood
