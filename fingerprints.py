@@ -12,23 +12,26 @@ from typing import Tuple, Callable, List
 
 
 #spectrogram function
-fig, ax = plt.subplots()
+data, sampling_rate = librosa.load(" ", sr=44100, mono=True)
+def plot_recording(time: float) -> Tuple[plt.Figure, plt.Axes]:
+    frames, sample_rate = record_audio(time)
+    data = np.hstack([np.frombuffer(i, np.int16) for i in frames])
 
-S, freqs, times, im = ax.specgram(
-    recorded_audio,
-    NFFT=4096,
-    Fs=sampling_rate,
-    window=mlab.window_hanning,
-    noverlap=4096 // 2,
-    mode='magnitude',
-    scale="dB"
-)
-fig.colorbar(im)
+    # using matplotlib's built-in spectrogram function
+    fig, ax = plt.subplots()
 
-ax.set_xlabel("Time [seconds]")
-ax.set_ylabel("Frequency (Hz)")
-ax.set_title("Spectrogram of Recording")
-ax.set_ylim(0, 4000);
+    S, freqs, times, im = ax.specgram(
+        data,
+        NFFT=4096,
+        Fs=sampling_rate,
+        window=mlab.window_hanning,
+        noverlap=4096 // 2,
+        mode='magnitude'
+    )
+    ax.set_ylim(0, 10000)
+    ax.set_xlabel("time (sec)")
+    ax.set_ylabel("frequency (Hz)")
+    return fig, ax
 
 #peaks function
 
@@ -43,10 +46,51 @@ def _peaks(
             continue
     
     for dr, dc in zip(nbrhd_row_offsets, nbrhd_col_offsets):
-            if dr == 0 and dc == 0:
+        if dr == 0 and dc == 0:
+            continue
+        if not (0 <= r + dr < data_2d.shape[0]):    
+            continue
+        if data_2d[r, c] < data_2d[r + dr, c + dc]:
+                
+                break
+        else:
+            
+            peaks.append((r, c))
+    return peaks
+def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min: float):
+    
+    
+    assert neighborhood.shape[0] % 2 == 1
+    assert neighborhood.shape[1] % 2 == 1
+
+    nbrhd_row_indices, nbrhd_col_indices = np.where(neighborhood)
+    
+
+    nbrhd_row_offsets = nbrhd_row_indices - neighborhood.shape[0] // 2
+    nbrhd_col_offsets = nbrhd_col_indices - neighborhood.shape[1] // 2
+
+    return _peaks(data_2d, nbrhd_row_offsets, nbrhd_col_offsets, amp_min=amp_min)
+def local_peaks_mask(data: np.ndarray, cutoff: float) -> np.ndarray:
+   
+    neighborhood_array = generate_binary_structure(2, 2)  
+
+    peak_locations = local_peak_locations(data, neighborhood_array, cutoff)  
+
+ 
+    peak_locations = np.array(peak_locations)
+
+ 
+    mask = np.zeros(data.shape, dtype=bool)
 
 
+    mask[peak_locations[:, 0], peak_locations[:, 1]] = 1
+  
+    return mask
 #neighborhood
 
+
 #fingerprints
+def fingerprints(peaklocations):
+    fanout = 15
+    for i in range()
 

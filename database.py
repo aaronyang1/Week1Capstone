@@ -9,7 +9,16 @@ fingerprints = defaultdict(None)
 songID = defaultdict(None)
 
 def addFingerprint(key: tuple, value: list):  #fp (1,2,3) : [(1,2), (1,3)] --song
-    #fdlfajfl
+    """
+    Adds fingerprint key/value pair to the fingerprints dictionary
+
+    Parameters
+    ----------
+    key: tuple, shape = (3,)
+        fingerprint in the form (f_i, f_j, ∆t_ij)
+    
+    value: list, shape = (N,)
+    """
     if key not in fingerprints:
         fingerprints[key] = [value]
     else:
@@ -33,7 +42,11 @@ def addSongID(id: int, songInfo: tuple):
 
     Parameters
     ----------
+    id: int
+        Value of the song ID to be added
     
+    songInfo: tuple, shape = (2,)
+        Tuple containing the song name and artist
     """
     if id not in songID:
         songID[id] = [songInfo]
@@ -43,6 +56,11 @@ def removeSongID(id: tuple):
 
     """
     Removes input id from songID dictionary 
+
+    Parameters
+    -----------
+    id: int
+        Value of the song ID to be removed
     """
 
     if id not in songID:
