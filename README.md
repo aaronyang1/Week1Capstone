@@ -1,14 +1,14 @@
 defaults.py (hyperparameters) 
 
 database.py (Aaron, Kate, Josh)
-  - defaultdict (f1,f2, dt): list (SongId, T)
+  - [defaultdict (f1,f2, dt): list (SongId, T)]
   -   pickle save
   -   pickle load
   -   add songs
   -     prevent duplicate songs
   -   remove songs
   -   query for songs
-  - SongID:name
+  - [SongID:name]
   -   pickle save
   -   pickle load
   -   add songs
