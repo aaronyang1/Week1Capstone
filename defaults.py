@@ -2,6 +2,7 @@
 Stores the globally-used default configuration values associated with sampling, fingerprinting, and matching the audio files
 """
 
+
 # The target sampling rate used to read in an audio file
 SAMPLING_RATE: int = 44100
 
