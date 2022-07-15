@@ -8,6 +8,10 @@ import numpy as np
 from IPython.display import Audio
 from microphone import record_audio
 import librosa
+import database
+import defaults
+import matching
+import fingerprints as fp
 
 # In[7]:
 
@@ -34,8 +38,14 @@ def mp3_to_np_array(file_path):
     file_path: String
         path to saved audio
     """
+
+    songName = input("Enter the name of your MP3 file/song: ")
+
     samples, sampling_rate = librosa.load(file_path, sr=44100, mono=True)
-    return samples, sampling_rate
+
+    fp.samples_to_spectogram(samples, sampling_rate)
+
+    return samples, sampling_rate, songName
 
 
 # In[ ]:

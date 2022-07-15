@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 from microphone import record_audio
+import database.py as db
 
 from scipy.ndimage.filters import maximum_filter
 from scipy.ndimage.morphology import generate_binary_structure
@@ -128,9 +129,9 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
 
 
 #fingerprints
-def save_fingerprints(fingerprints: list):
-    
-def fingerprints(peaks: np.ndarray, fanout = 15, songID : int):
+
+
+def fingerprints(peaks: np.ndarray, songID : int, database: tuple, fanout = 15):
     
     """
     
@@ -170,10 +171,9 @@ def fingerprints(peaks: np.ndarray, fanout = 15, songID : int):
             
             #fingerprints.append([(fi, fj, tj - ti), ti])
             fingerprints.append([(fi, fj, tj - ti), id, ti])
-            
+
+    database = db.addFingerprint(fingerprints)
     
     return fingerprints 
 
-
-    
             
