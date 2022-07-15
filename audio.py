@@ -60,6 +60,8 @@ def mp3_input(file_path, songName = None, artist = None):
     id = db.generateID(songName)
     fingers = fp.fingerprints(L_peaks, id)
     
+
+
     db.addSongID(id, (songName, artist))
 
     return samples, sampling_rate, songName

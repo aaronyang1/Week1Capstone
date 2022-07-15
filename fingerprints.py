@@ -34,22 +34,22 @@ def samples_to_spectogram(samples, sampling_rate):
         NFFT=4096,
         Fs=sampling_rate,
         window=mlab.window_hanning,
-        noverlap=int(4096 / 2)
+        noverlap=int(4096 // 2)
     )
+
     spectrogram = np.clip(spectrogram, 10**-20, None)
-    np.log10(spectrogram)
+    spectrogram = np.log(spectrogram)
     
     # finding min amplitude
 
     percentile = defaults.MIN_FRAC_AMP_CUTOFF
 
-    log_S = np.log(spectrogram).ravel()  # ravel flattens 2D spectrogram into a 1D array
+    log_S = spectrogram.ravel()  # ravel flattens 2D spectrogram into a 1D array
     ind = round(len(log_S) * percentile)  # find the index associated with the 75th percentile log-amplitude
-    cutoff_log_amplitude = np.partition(log_S, ind)[ind]  # find the actual 675th percentile log-amplitude
+    cutoff_log_amplitude = np.partition(log_S, ind)[ind]  # find the actual 75th percentile log-amplitude
     
 
     return spectrogram, cutoff_log_amplitude
-
 
 #peaks function 
 base_structure = generate_binary_structure(2,1)
