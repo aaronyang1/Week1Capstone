@@ -32,11 +32,13 @@ def samples_to_spectogram(samples, sampling_rate):
         window=mlab.window_hanning,
         noverlap=int(4096 / 2)
     )
-    spectrogram = map(lambda x: x if x != 0 else 10**(-12), spectrogram)
+    spectrogram = np.clip(spectrogram, 10**-20, None, out)
     np.log10(spectrogram)
-    return spectogram
+    return spectrogram
 
 #peaks function 
+base_structure = generate_binary_structure(2,1)
+neighborhood = iterate_structure(base_structure, 20)
 
 @njit
 def _peaks(
@@ -107,11 +109,10 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
     Returns
     -------
     List[Tuple[int, int]]
-        (row, col) index pair for each local peak location, returned
+        (row (time window), col (frequency) ) index pair for each local peak location, returned
         in column-major ordering.
     
     """
-    
     
     assert neighborhood.shape[0] % 2 == 1
     assert neighborhood.shape[1] % 2 == 1
@@ -127,7 +128,9 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
 
 
 #fingerprints
-def fingerprints(peaks: np.ndarray, fanout = 15):
+def save_fingerprints(fingerprints: list):
+    
+def fingerprints(peaks: np.ndarray, fanout = 15, songID : int):
     
     """
     
@@ -138,21 +141,39 @@ def fingerprints(peaks: np.ndarray, fanout = 15):
         
         fanout: int 
             Numbers of nearest peak connectionns
-        
+
+        songID : int
+            Unique song ID     
     
     Returns:
     
-        fingerprints : List[Tuple[float, float, float]
+        fingerprints : List[Tuple[float, float, float]]
             (initial peak frequency, fanout peak frequency, time between peaks)
     
+        times:  List[float]
+            time in which the fingerprint occurs in recording
     """
+    id = songID
     fingerprints = []
-    
-    for i in range(len(peaks) - fanout):
-        for j in range(fanout):
-            fingerprints.append(peaks[i, 0], peaks[i + j, 0], peaks[i+j, 1] - peaks[i , 1])
-            
-    return fingerprints 
-    
+#   time_i = []
 
+    for i in range(len(peaks)):
+      
+        for j in range(1, min(fanout + 1, len(peaks) - i)):
+            
+            
+            
+            fi = peaks[i][0]
+            fj = peaks[i + j][0]
+            ti = peaks[i][1] # flag!
+            tj = peaks[i+j][1]
+            
+            #fingerprints.append([(fi, fj, tj - ti), ti])
+            fingerprints.append([(fi, fj, tj - ti), id, ti])
+            
+    
+    return fingerprints 
+
+
+    
             
