@@ -1,32 +1,54 @@
-defaults.py (hyperparameters) 
-
-database.py (Aaron, Kate, Josh)
-  - [defaultdict (f1,f2, dt): list (SongId, T)]
-  -   pickle save
-  -   pickle load
-  -   add songs
-  -     prevent duplicate songs
-  -   remove songs
-  -   query for songs
-  - [SongID:name]
-  -   pickle save
-  -   pickle load
-  -   add songs
-  -     prevent duplicate songs
-  -   remove songs
-  -   query for songs
-
-audio.py (Jamie)
-  - record audio from microphone
-  -   turn audio file into numpy array of samples
-  - take in existing MP3 files
-  -   turn audio file into numpy array of samples
-
-fingerprinting.py (everyone else)
-  - function to turn array of samples into spectrogram
-  - function that uses spectrogram to find peaks & fingerprints
-  -   save fingerprints in database
- 
- matching.py
-  - function to take new audio files and match them to songs in database
-  
+We're no strangers to love
+You know the rules and so do I (do I)
+A full commitment's what I'm thinking of
+You wouldn't get this from any other guy
+I just wanna tell you how I'm feeling
+Gotta make you understand
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+We've known each other for so long
+Your heart's been aching, but you're too shy to say it (say it)
+Inside, we both know what's been going on (going on)
+We know the game and we're gonna play it
+And if you ask me how I'm feeling
+Don't tell me you're too blind to see
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+We've known each other for so long
+Your heart's been aching, but you're too shy to say it (to say it)
+Inside, we both know what's been going on (going on)
+We know the game and we're gonna play it
+I just wanna tell you how I'm feeling
+Gotta make you understand
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
