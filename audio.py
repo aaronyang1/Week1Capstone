@@ -52,7 +52,7 @@ def mp3_input(file_path, songName = None, artist = None):
     
     samples, sampling_rate = librosa.load(file_path, sr=44100, mono=True)
 
-    spectroG, cutoff = fp.samples_to_spectogram(samples, sampling_rate)
+    spectroG, cutoff = fp.samples_to_spectrogram(samples, sampling_rate)
     base_structure = generate_binary_structure(2,1)
     neighborhood = iterate_structure(base_structure, 20)
 
@@ -60,6 +60,7 @@ def mp3_input(file_path, songName = None, artist = None):
     id = db.generateID(songName)
     fingers = fp.fingerprints(L_peaks, id)
     
+    db.addFingerprint(fingers)
 
 
     db.addSongID(id, (songName, artist))

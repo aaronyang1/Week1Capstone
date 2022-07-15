@@ -12,7 +12,7 @@ from numba import njit
 from typing import Tuple, Callable, List
 
 
-def samples_to_spectogram(samples, sampling_rate):
+def samples_to_spectrogram(samples, sampling_rate):
 
     #
     """
@@ -88,25 +88,42 @@ def _peaks(
         column-major order
     """
 
-    peaks = []
+    peaks = []  # stores the (row, col) locations of all the local peaks
+
     for c, r in np.ndindex(*data_2d.shape[::-1]):
         if data_2d[r, c] <= amp_min:
+            # The amplitude falls beneath the minimum threshold
+            # thus this can't be a peak.
             continue
-    
-    for dr, dc in zip(nbrhd_row_offsets, nbrhd_col_offsets):
-        if dr == 0 and dc == 0:
-            continue
-        if not (0 <= r + dr < data_2d.shape[0]):    
-            continue
-        if data_2d[r, c] < data_2d[r + dr, c + dc]:
-                
+        
+        # Iterating over the neighborhood centered on (r, c) to see
+        # if (r, c) is associated with the largest value in that
+        # neighborhood.
+
+        # dr: offset from r to visit neighbor
+        # dc: offset from c to visit neighbor
+        for dr, dc in zip(nbrhd_row_offsets, nbrhd_col_offsets):
+            if dr == 0 and dc == 0:
+                # This would compare (r, c) with itself.. skip!
+                continue
+            if not (0 <= r + dr < data_2d.shape[0]):
+                # neighbor falls outside of boundary.. skip!
+                continue
+            if not (0 <= c + dc < data_2d.shape[1]):
+                # neighbor falls outside of boundary.. skip!
+                continue
+            if data_2d[r, c] < data_2d[r + dr, c + dc]:
+                # One of the amplitudes within the neighborhood
+                # is larger, thus data_2d[r, c] cannot be a peak
                 break
         else:
-            
+            # if we did not break from the for-loop then (r, c) is a local peak
             peaks.append((r, c))
     return peaks
     
 #this calculates the cutoff for the amplitudes of the peaks
+
+
 def find_min_amp(spectrogram, percentile=defaults.MIN_FRAC_AMP_CUTOFF):
     """
     Identified as 75th percentile amplitude from spectrogram.
@@ -148,11 +165,11 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
     nbrhd_row_indices, nbrhd_col_indices = np.where(neighborhood)
     
 
-    nbrhd_row_offsets = nbrhd_row_indices - neighborhood.shape[0] // 2
-    nbrhd_col_offsets = nbrhd_col_indices - neighborhood.shape[1] // 2
+    nbrhd_row_indices = nbrhd_row_indices - neighborhood.shape[0] // 2
+    nbrhd_col_indices = nbrhd_col_indices - neighborhood.shape[1] // 2
 
-    return _peaks(data_2d, nbrhd_row_offsets, nbrhd_col_offsets, amp_min=amp_min)
-
+    return _peaks(data_2d, nbrhd_row_indices, nbrhd_col_indices, amp_min=amp_min)
+                
 
 
 #fingerprints
@@ -195,7 +212,7 @@ def fingerprints(peaks: np.ndarray, songID : int, fanout = 15):
             #fingerprints.append([(fi, fj, tj - ti), ti])
             fingerprints.append([(fi, fj, tj - ti), id, ti])
 
-    db.addFingerprint(fingerprints) #works? idk to add fingerprint to database
+     #works? idk to add fingerprint to database
     
     return fingerprints
 

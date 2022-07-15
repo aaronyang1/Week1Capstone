@@ -118,7 +118,6 @@ def removeSongID(id: int):
     id: int
         Value of the song ID to be removed
     """
-
     if id in songID:
         del songID[id]     
 
@@ -177,8 +176,6 @@ def generateID(songN: str):
         newID = max(songID) + 1
     except:
         newID = 1
-
-    songID[newID] = songN
 
     return newID
 
