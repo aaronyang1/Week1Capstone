@@ -1,5 +1,5 @@
 """
-Stores the globally-used default configuration values associated with sampling and fingerprinting the audio files
+Stores the globally-used default configuration values associated with sampling, fingerprinting, and matching the audio files
 """
 
 # The target sampling rate used to read in an audio file
@@ -20,3 +20,6 @@ FINGERPRINT_FANOUT: int = 15
 
 # The number of data points used in each block for the FFT.
 NFFT: int = 4096
+
+# The minimum number of fingerprint matches needed to conclude song and input are a match.
+THRESHOLD: int = 10

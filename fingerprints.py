@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
+import database as db
 from microphone import record_audio
-import database.py as db
+import defaults
 
 from scipy.ndimage.filters import maximum_filter
 from scipy.ndimage.morphology import generate_binary_structure
@@ -13,16 +14,18 @@ from typing import Tuple, Callable, List
 
 def samples_to_spectogram(samples, sampling_rate):
 
-    #spectrogram function
+    #
     """
+    Turns audio samples into spectrogram
     Parameters
-    
+    ----------
     sampling_rate : int, 
         the sampling rate (44100 Hz)
     audio_samples : np.array
         audio samples from mp3 or microphone
         
-    Returns:
+    Returns
+    --------
         spectogram of audio samples
 
     """
@@ -33,9 +36,20 @@ def samples_to_spectogram(samples, sampling_rate):
         window=mlab.window_hanning,
         noverlap=int(4096 / 2)
     )
-    spectrogram = np.clip(spectrogram, 10**-20, None, out)
+    spectrogram = np.clip(spectrogram, 10**-20, None)
     np.log10(spectrogram)
-    return spectrogram
+    
+    # finding min amplitude
+
+    percentile = defaults.MIN_FRAC_AMP_CUTOFF
+
+    log_S = np.log(spectrogram).ravel()  # ravel flattens 2D spectrogram into a 1D array
+    ind = round(len(log_S) * percentile)  # find the index associated with the 75th percentile log-amplitude
+    cutoff_log_amplitude = np.partition(log_S, ind)[ind]  # find the actual 675th percentile log-amplitude
+    
+
+    return spectrogram, cutoff_log_amplitude
+
 
 #peaks function 
 base_structure = generate_binary_structure(2,1)
@@ -47,6 +61,7 @@ def _peaks(
 ) -> List[Tuple[int, int]]:
     
     """
+    Finds and returns peaks in a spectrogram
     Parameters
     ----------
     data_2d : numpy.ndarray, shape-(H, W)
@@ -90,6 +105,18 @@ def _peaks(
             
             peaks.append((r, c))
     return peaks
+    
+#this calculates the cutoff for the amplitudes of the peaks
+def find_min_amp(spectrogram, percentile=defaults.MIN_FRAC_AMP_CUTOFF):
+    """
+    Identified as 75th percentile amplitude from spectrogram.
+    Finds minimum threshold for amplitude such that peaks are significant. 
+    """
+    log_S = np.log(spectrogram).ravel()  # ravel flattens 2D spectrogram into a 1D array
+    ind = round(len(log_S) * percentile)  # find the index associated with the 75th percentile log-amplitude
+    cutoff_log_amplitude = np.partition(log_S, ind)[ind]  # find the actual 675th percentile log-amplitude
+    return cutoff_log_amplitude
+
 
 def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min: float):
     """
@@ -131,11 +158,9 @@ def local_peak_locations(data_2d: np.ndarray, neighborhood: np.ndarray, amp_min:
 #fingerprints
 
 
-def fingerprints(peaks: np.ndarray, songID : int, database: tuple, fanout = 15):
+def fingerprints(peaks: np.ndarray, songID : int, fanout = 15):
     
     """
-    
-    
     Parameters:
         peaks : List[Tuple[int, int]]
             (row, col) index pair for each local peak location in column-major order
@@ -162,8 +187,6 @@ def fingerprints(peaks: np.ndarray, songID : int, database: tuple, fanout = 15):
       
         for j in range(1, min(fanout + 1, len(peaks) - i)):
             
-            
-            
             fi = peaks[i][0]
             fj = peaks[i + j][0]
             ti = peaks[i][1] # flag!
@@ -172,8 +195,8 @@ def fingerprints(peaks: np.ndarray, songID : int, database: tuple, fanout = 15):
             #fingerprints.append([(fi, fj, tj - ti), ti])
             fingerprints.append([(fi, fj, tj - ti), id, ti])
 
-    database = db.addFingerprint(fingerprints)
+    db.addFingerprint(fingerprints) #works? idk to add fingerprint to database
     
-    return fingerprints 
+    return fingerprints
 
             

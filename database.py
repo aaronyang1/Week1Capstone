@@ -155,12 +155,40 @@ def getSong (key: int):
         return songID[key]
     except:
         return []
-    
 
+def generateID(songN: str):
+
+    """
+    Generates a new ID and SongName pairing and adds it into the SongID dict
+
+    Parameters
+    -----------
+    songN: String
+        Name of the song
+
+    return
+    -------
+        NewId: int
+            ID of the song added to songID dict
+
+    """
+
+    try:
+        newID = max(songID) + 1
+    except:
+        newID = 1
+
+    songID[newID] = songN
+
+    return newID
+
+'''
 addFingerprint([[(1, 2, 3), 4, 1], [(1, 2, 3), 5, 1], [(1, 2, 3), 6, 2]])
 addFingerprint([[(4, 5, 6), 4, 3]])
 print(fingerprints)
 removeFingerprint((4, 5, 6), (4, 1))
+'''
+
 '''
 addSongID(1, ("Halo Theme", "Ryan Soklaski"))
 addSongID(2, ('Waluigiverse', 'Ryan Soklaski'))
